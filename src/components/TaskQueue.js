@@ -38,7 +38,7 @@ function TaskQueue() {
     <div>
       {tasks.map(({ id, running }) => (
         <article key={id}>
-          <Task running={running} />
+          <Task running={running} id={id} />
         </article>
       ))}
     </div>

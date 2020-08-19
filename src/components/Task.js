@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import deleteIcon from "../assets/deleteIcon.png";
+import { StoreContext } from "../contexts/Store";
 
-function Task({ running }) {
+function Task({ id, running }) {
   const [time, setTime] = useState(0);
+  const { dispatch } = useContext(StoreContext);
 
   useEffect(() => {
     if (running) {
@@ -16,8 +19,17 @@ function Task({ running }) {
     <div className="task">
       <span style={{ width: `${time * 5}%` }}></span>
       <div className="task-details">
-        <p>{!running ? "waiting" : `0.0${time}`}</p>
+        <p>{!running ? "waiting" : `00.${time}`}</p>
       </div>
+      {!running && (
+        <div className="task-delete">
+          <img
+            alt="delete"
+            src={deleteIcon}
+            onClick={() => dispatch({ type: "remove_task", payload: { id } })}
+          />
+        </div>
+      )}
     </div>
   );
 }

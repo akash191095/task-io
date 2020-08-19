@@ -45,4 +45,14 @@
   top: 50%;
   left: 2em;
   transform: translate(0%, -50%);
+  color: white;
+}
+
+.task-delete > img {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 25px;
+  margin: 0.5em;
+  cursor: pointer;
 }
