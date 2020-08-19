@@ -12,3 +12,11 @@
 .button:disabled {
   background-color: gray;
 }
+
+.add-task__input {
+  border: 1px solid rgb(146, 103, 194);
+  padding: 1em;
+  border-radius: 10px;
+  width: 3em;
+  height: 0.6em;
+}

@@ -17,8 +17,6 @@ function Server({ id }) {
       >
         Remove Server
       </button>
-      <button className="button">Add Tasks</button>
-      <input type="number" />
       <p>List of tasks</p>
     </section>
   );

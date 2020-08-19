@@ -1,7 +1,12 @@
 import React from "react";
 
 function TaskManager() {
-  return <p>Hello from the task manager</p>;
+  return (
+    <div>
+      <button className="button">Add Tasks</button>
+      <input type="number" />
+    </div>
+  );
 }
 
 export default TaskManager;
