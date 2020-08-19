@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Servers from "../components/Servers";
 import { StoreContext } from "../contexts/Store";
+import TaskQueue from "../components/TaskQueue";
 
 function System() {
   const { state, dispatch } = useContext(StoreContext);
@@ -15,6 +16,10 @@ function System() {
     dispatch({ type: "add_server" });
   }, [dispatch]);
 
+  function addTask() {
+    dispatch({ type: "add_task" });
+  }
+
   return (
     <main>
       <h1>System - Task Manager</h1>
@@ -27,18 +32,21 @@ function System() {
       </button>
       <button
         className="button"
-        onClick={() => dispatch({ type: "remove_server" })}
+        onClick={() => dispatch({ type: "mark_remove_server" })}
         disabled={minServerReached}
       >
         Remove Server
       </button>
-      <button className="button">Add Tasks</button>
+      <button className="button" onClick={addTask}>
+        Add Tasks
+      </button>
       <input
         type="number"
         className="add-task__input"
         value={taskInput}
         onChange={(e) => setTaskInput(e.target.value)}
       />
+      <TaskQueue />
       <Servers />
     </main>
   );
