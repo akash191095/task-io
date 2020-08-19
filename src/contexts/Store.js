@@ -37,7 +37,7 @@ let reducer = (state, action) => {
       };
     }
     default:
-      return;
+      return state;
   }
 };
 
