@@ -4,12 +4,14 @@ import { StoreContext } from "../contexts/Store";
 function Servers() {
   const { state } = useContext(StoreContext);
   const { servers } = state;
+  const serversToBeDeleted = servers.filter(
+    (server) => server.toBeRemoved === true
+  );
   return (
-    <section className="server">
-      {servers.map(({ id }) => (
-        <h2 key={id}>Server #{id}</h2>
-      ))}
-    </section>
+    <div>
+      <h2>Servers running: #{servers.length}</h2>
+      <h2>Servers scheduled to be deleted: #{serversToBeDeleted.length} </h2>
+    </div>
   );
 }
 

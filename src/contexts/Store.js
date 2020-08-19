@@ -3,7 +3,6 @@ import shortId from "short-uuid";
 
 const initialState = {
   servers: [],
-  serversToRemove: [],
   tasks: [],
 };
 
