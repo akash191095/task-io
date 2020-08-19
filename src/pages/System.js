@@ -4,7 +4,8 @@ import { StoreContext } from "../contexts/Store";
 
 function System() {
   const { state, dispatch } = useContext(StoreContext);
-  const { servers } = state;
+  const { servers, activeServers } = state;
+  const maxServersReached = activeServers === 10 ? true : false;
 
   // Initialize the system
   useEffect(() => {
@@ -17,6 +18,7 @@ function System() {
       <button
         className="button"
         onClick={() => dispatch({ type: "add_server" })}
+        disabled={maxServersReached}
       >
         Add Server
       </button>
