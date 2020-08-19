@@ -10,7 +10,7 @@ function System() {
   // Initialize the system
   useEffect(() => {
     dispatch({ type: "add_server" });
-  }, []);
+  }, [dispatch]);
 
   return (
     <main>

@@ -29,7 +29,7 @@ let reducer = (state, action) => {
     }
     case "remove_server": {
       const { id } = action.payload;
-      const newServers = state.servers.filter((server) => server.id != id);
+      const newServers = state.servers.filter((server) => server.id !== id);
       return {
         ...state,
         servers: newServers,
