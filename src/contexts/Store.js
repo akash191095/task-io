@@ -1,4 +1,5 @@
 import React, { useReducer } from "react";
+import shortId from "short-uuid";
 
 const initialState = {
   servers: [],
@@ -20,10 +21,9 @@ function StoreProvider({ children }) {
 let reducer = (state, action) => {
   switch (action.type) {
     case "add_server": {
-      const { id } = action.payload;
       return {
         ...state,
-        servers: [...state.servers, { id }],
+        servers: [...state.servers, { id: shortId.generate() }],
         activeServers: state.activeServers + 1,
       };
     }
