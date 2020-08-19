@@ -35,7 +35,7 @@ function TaskQueue() {
   }, [servers, tasks, dispatch]);
 
   return (
-    <div>
+    <div className="tasks-container">
       {tasks.map(({ id, running }) => (
         <article key={id}>
           <Task running={running} id={id} />

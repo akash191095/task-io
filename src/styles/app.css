@@ -14,3 +14,7 @@ body {
   align-items: flex-start;
   justify-content: center;
 }
+
+.tasks-container {
+  margin-right: 1.5em;
+}
