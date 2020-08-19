@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import Server from "../components/Server";
+import Servers from "../components/Servers";
 import { StoreContext } from "../contexts/Store";
 
 function System() {
   const { state, dispatch } = useContext(StoreContext);
-  const { servers, activeServers } = state;
+  const { activeServers } = state;
   const maxServersReached = activeServers === 10 ? true : false;
+  const minServerReached = activeServers === 1 ? true : false;
 
   const [taskInput, setTaskInput] = useState(0);
 
@@ -24,6 +25,13 @@ function System() {
       >
         Add Server
       </button>
+      <button
+        className="button"
+        onClick={() => dispatch({ type: "remove_server" })}
+        disabled={minServerReached}
+      >
+        Remove Server
+      </button>
       <button className="button">Add Tasks</button>
       <input
         type="number"
@@ -31,11 +39,7 @@ function System() {
         value={taskInput}
         onChange={(e) => setTaskInput(e.target.value)}
       />
-      <section className="servers">
-        {servers.map(({ id }) => (
-          <Server id={id} key={id} />
-        ))}
-      </section>
+      <Servers />
     </main>
   );
 }

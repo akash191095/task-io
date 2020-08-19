@@ -23,13 +23,15 @@ let reducer = (state, action) => {
     case "add_server": {
       return {
         ...state,
-        servers: [...state.servers, { id: shortId.generate() }],
+        servers: [...state.servers, { id: shortId.generate(), active: false }],
         activeServers: state.activeServers + 1,
       };
     }
     case "remove_server": {
-      const { id } = action.payload;
-      const newServers = state.servers.filter((server) => server.id !== id);
+      const idleServer = state.servers.find((server) => !server.active);
+      const newServers = state.servers.filter(
+        (server) => server.id !== idleServer.id
+      );
       return {
         ...state,
         servers: newServers,
