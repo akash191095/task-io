@@ -51,8 +51,8 @@ function System() {
         value={taskInput}
         onChange={(e) => setTaskInput(e.target.value)}
       />
-      <TaskQueue />
       <Servers />
+      <TaskQueue />
     </main>
   );
 }

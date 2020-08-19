@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { StoreContext } from "../contexts/Store";
+import Task from "./Task";
 
 function TaskQueue() {
   const { state, dispatch } = useContext(StoreContext);
@@ -29,17 +30,16 @@ function TaskQueue() {
       // remove the task after a certain time
       setTimeout(() => {
         dispatch({ type: "remove_task", payload: { id: taskToProcess.id } });
-      }, 5000);
+      }, 20000);
     }
   }, [servers, tasks, dispatch]);
 
   return (
     <div>
       {tasks.map(({ id, running }) => (
-        <p key={id}>
-          {id}
-          {running ? "yes" : "no"}
-        </p>
+        <article key={id}>
+          <Task running={running} />
+        </article>
       ))}
     </div>
   );

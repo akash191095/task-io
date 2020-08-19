@@ -66,7 +66,7 @@ let reducer = (state, action) => {
     case "add_task": {
       const newTasks = [];
       const { number = 1 } = action.payload;
-      for (let i = 0; i <= number; i++) {
+      for (let i = 0; i < number; i++) {
         newTasks.push({
           id: shortId.generate(),
           running: false,
