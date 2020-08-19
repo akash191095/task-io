@@ -8,14 +8,23 @@ function System() {
 
   // Initialize the system
   useEffect(() => {
-    dispatch({ type: "add_server", payload: { id: 1 } });
+    dispatch({ type: "add_server" });
   }, []);
 
   return (
     <main>
-      {servers.map(({ id }) => (
-        <Server id={id} key={id} />
-      ))}
+      <h1>System - Task Manager</h1>
+      <button
+        className="button"
+        onClick={() => dispatch({ type: "add_server" })}
+      >
+        Add Server
+      </button>
+      <section className="servers">
+        {servers.map(({ id }) => (
+          <Server id={id} key={id} />
+        ))}
+      </section>
     </main>
   );
 }

@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 function Task() {
-    return <p>Task view</p>
+  return <p>Task view</p>;
 }
 
 export default Task;
