@@ -1,10 +1,12 @@
-import React from 'react';
+import React from "react";
+import System from "./pages/System";
+import { StoreProvider } from "./contexts/Store";
 
 function App() {
   return (
-    <div className="App">
-      Hello from app.js
-    </div>
+    <StoreProvider>
+      <System />
+    </StoreProvider>
   );
 }
 
