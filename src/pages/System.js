@@ -7,7 +7,12 @@ function System() {
   const { state, dispatch } = useContext(StoreContext);
   const { servers } = state;
   const maxServersReached = servers.length === 10 ? true : false;
-  const minServerReached = servers.length === 1 ? true : false;
+
+  const avaiableServers = state.servers.filter((server) => {
+    if (server.active && server.toBeRemoved) return false;
+    return true;
+  });
+  const minServerReached = avaiableServers.length === 1 ? true : false;
 
   const [taskInput, setTaskInput] = useState(0);
 
