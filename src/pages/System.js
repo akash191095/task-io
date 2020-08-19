@@ -5,9 +5,9 @@ import TaskQueue from "../components/TaskQueue";
 
 function System() {
   const { state, dispatch } = useContext(StoreContext);
-  const { activeServers } = state;
-  const maxServersReached = activeServers === 10 ? true : false;
-  const minServerReached = activeServers === 1 ? true : false;
+  const { servers } = state;
+  const maxServersReached = servers.length === 10 ? true : false;
+  const minServerReached = servers.length === 1 ? true : false;
 
   const [taskInput, setTaskInput] = useState(0);
 
@@ -17,7 +17,7 @@ function System() {
   }, [dispatch]);
 
   function addTask() {
-    dispatch({ type: "add_task" });
+    dispatch({ type: "add_task", payload: { number: taskInput } });
   }
 
   return (

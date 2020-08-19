@@ -10,7 +10,6 @@ function TaskQueue() {
     const serverToRemove = servers.find((server) => server.toBeRemoved);
     if (serverToRemove && !serverToRemove.active) {
       dispatch({ type: "remove_server", payload: { id: serverToRemove.id } });
-      return;
     }
 
     // Process Tasks
@@ -30,7 +29,7 @@ function TaskQueue() {
       // remove the task after a certain time
       setTimeout(() => {
         dispatch({ type: "remove_task", payload: { id: taskToProcess.id } });
-      }, 2000);
+      }, 5000);
     }
   }, [servers, tasks, dispatch]);
 

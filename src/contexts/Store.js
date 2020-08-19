@@ -33,8 +33,12 @@ let reducer = (state, action) => {
     }
     case "mark_remove_server": {
       let newServers = state.servers;
+      const avaiableServers = state.servers.filter((server) => {
+        if (server.active && server.toBeRemoved) return false;
+        return true;
+      });
       // only proceed if we have more than 1 servers
-      if (state.servers.length > 1) {
+      if (avaiableServers.length > 1) {
         // find a server which is not already in the list
         const findAServerToRemove = state.servers.find(
           (server) => !server.toBeRemoved
@@ -50,6 +54,8 @@ let reducer = (state, action) => {
       return { ...state, servers: newServers };
     }
     case "remove_server": {
+      // only proceed if we have more than 1 servers
+      if (state.servers.length <= 1) return state;
       const { id } = action.payload;
       const newServers = state.servers.filter((server) => server.id !== id);
       return {
@@ -58,14 +64,18 @@ let reducer = (state, action) => {
       };
     }
     case "add_task": {
-      const newTask = {
-        id: shortId.generate(),
-        running: false,
-        serverId: null,
-      };
+      const newTasks = [];
+      const { number = 1 } = action.payload;
+      for (let i = 0; i <= number; i++) {
+        newTasks.push({
+          id: shortId.generate(),
+          running: false,
+          serverId: null,
+        });
+      }
       return {
         ...state,
-        tasks: [...state.tasks, newTask],
+        tasks: [...state.tasks, ...newTasks],
       };
     }
     case "start_task": {
