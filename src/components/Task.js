@@ -4,7 +4,8 @@ import { StoreContext } from "../contexts/Store";
 
 function Task({ id, running }) {
   const [time, setTime] = useState(0);
-  const { dispatch } = useContext(StoreContext);
+
+  const { removeTask } = useContext(StoreContext);
 
   useEffect(() => {
     if (running) {
@@ -23,11 +24,7 @@ function Task({ id, running }) {
       </div>
       {!running && (
         <div className="task-delete">
-          <img
-            alt="delete"
-            src={deleteIcon}
-            onClick={() => dispatch({ type: "remove_task", payload: { id } })}
-          />
+          <img alt="delete" src={deleteIcon} onClick={() => removeTask(id)} />
         </div>
       )}
     </div>

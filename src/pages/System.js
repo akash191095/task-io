@@ -1,48 +1,43 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Servers from "../components/Servers";
 import { StoreContext } from "../contexts/Store";
 import TaskQueue from "../components/TaskQueue";
 
 function System() {
-  const { state, dispatch } = useContext(StoreContext);
-  const { servers } = state;
-  const maxServersReached = servers.length === 10 ? true : false;
+  const {
+    addAServer,
+    addTask,
+    markAServerToBeRemoved,
+    data: { servers },
+  } = useContext(StoreContext);
 
-  const avaiableServers = state.servers.filter((server) => {
+  const maxServersReached = servers.length === 10 ? true : false;
+  const avaiableServers = servers.filter((server) => {
     if (server.active && server.toBeRemoved) return false;
     return true;
   });
   const minServerReached = avaiableServers.length === 1 ? true : false;
 
-  const [taskInput, setTaskInput] = useState(0);
-
-  // Initialize the system
-  useEffect(() => {
-    dispatch({ type: "add_server" });
-  }, [dispatch]);
-
-  function addTask() {
-    dispatch({ type: "add_task", payload: { number: taskInput } });
-  }
+  const [taskInput, setTaskInput] = useState(1);
 
   return (
     <main>
       <h1>System - Task Manager</h1>
       <button
         className="button"
-        onClick={() => dispatch({ type: "add_server" })}
+        onClick={addAServer}
         disabled={maxServersReached}
       >
         Add Server
       </button>
       <button
         className="button"
-        onClick={() => dispatch({ type: "mark_remove_server" })}
+        onClick={markAServerToBeRemoved}
         disabled={minServerReached}
       >
         Remove Server
       </button>
-      <button className="button" onClick={addTask}>
+      <button className="button" onClick={() => addTask(taskInput)}>
         Add Tasks
       </button>
       <input
