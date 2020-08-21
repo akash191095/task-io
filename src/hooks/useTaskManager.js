@@ -56,10 +56,6 @@ function useTaskQueue() {
     );
   }
 
-  function removeTaskFromQueue(taskId) {
-    setTaskQueue((prevState) => prevState.filter((task) => task.id !== taskId));
-  }
-
   function addAServer() {
     // check if max servers reached
     if (servers.length >= 10) return; // can also setup error messages
@@ -102,7 +98,7 @@ function useTaskQueue() {
     setTimeout(() => {
       // handle post task completion
       // remove task from queue
-      removeTaskFromQueue(taskId);
+      removeTask(taskId);
       // release server for other tasks
       changeServerIdleStatus(serverId, true);
     }, 20000);
