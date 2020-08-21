@@ -98,7 +98,7 @@ function useTaskQueue() {
     setTimeout(() => {
       // handle post task completion
       // remove task from queue
-      removeTask(taskId);
+      setTaskQueue((prevState) => prevState.filter(({ id }) => id !== taskId));
       // release server for other tasks
       changeServerIdleStatus(serverId, true);
     }, 20000);
