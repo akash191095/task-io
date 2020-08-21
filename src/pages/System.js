@@ -13,7 +13,7 @@ function System() {
 
   const maxServersReached = servers.length === 10 ? true : false;
   const avaiableServers = servers.filter((server) => {
-    if (server.active && server.toBeRemoved) return false;
+    if (!server.idle && server.toBeRemoved) return false;
     return true;
   });
   const minServerReached = avaiableServers.length === 1 ? true : false;
