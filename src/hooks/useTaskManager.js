@@ -19,18 +19,19 @@ function useTaskQueue() {
 
   useEffect(() => {
     // everytime we modify servers/tasks state we will run this block
+    // remove any servers which were marked to be deleted
+    const serverToBeRemoved = servers.find(({ toBeRemoved }) => toBeRemoved);
+    if (serverToBeRemoved && serverToBeRemoved.idle) {
+      removeServer(serverToBeRemoved.id);
+      return;
+    }
+
     // execute task if server is idle and we have a task pending
     const idleServer = servers.find(({ idle }) => idle === true);
     const taskToProcess = taskQueue.find((task) => !task.serverId);
 
     if (idleServer && taskToProcess) {
       taskToProcess.executeTask(taskToProcess.id, idleServer.id);
-    }
-
-    // remove any servers which were marked to be deleted
-    const serverToBeRemoved = servers.find(({ toBeRemoved }) => toBeRemoved);
-    if (serverToBeRemoved && serverToBeRemoved.idle) {
-      removeServer(serverToBeRemoved.id);
     }
   }, [servers, taskQueue]);
 
