@@ -1,7 +1,5 @@
 import { renderHook, act } from "@testing-library/react-hooks/";
-
 import useTaskManager from "../hooks/useTaskManager";
-import { wait } from "@testing-library/react";
 
 test("starts up with 1 server and 0 tasks running", () => {
   const { result } = renderHook(() => useTaskManager());
