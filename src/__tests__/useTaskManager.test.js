@@ -1,6 +1,6 @@
-import { renderHook, act } from "@testing-library/react-hooks/";
+import { renderHook, act } from "@testing-library/react-hooks";
 import useTaskManager from "../hooks/useTaskManager";
-
+jest.useFakeTimers();
 test("starts up with 1 server and 0 tasks running", () => {
   const { result } = renderHook(() => useTaskManager());
 
@@ -58,7 +58,7 @@ test("1 server performs only 1 task at a time", () => {
   expect(result.current.data.taskQueue[1].running).toBe(false);
 });
 
-test('Server removed immediatly if idle onClick "Remove a server" button', () => {
+test("Server is removed immediatly if idle", () => {
   const { result } = renderHook(() => useTaskManager());
 
   const numberOfServers = result.current.data.servers.length;
@@ -76,12 +76,9 @@ test('Server removed immediatly if idle onClick "Remove a server" button', () =>
   expect(result.current.data.servers.length).toBe(numberOfServers);
 });
 
-test('Server removed when job is finished if not idle onClick "Remove a server" button', async () => {
+test("Server is not removed immediatly if idle", async () => {
   const { result } = renderHook(() => useTaskManager());
-  jest.useFakeTimers();
-
   const numberOfServers = result.current.data.servers.length;
-  const numberOfTasks = result.current.data.taskQueue.length;
 
   // add a server
   act(() => {
@@ -96,19 +93,47 @@ test('Server removed when job is finished if not idle onClick "Remove a server" 
       result.current.addTask();
     });
   }
-  expect(result.current.data.taskQueue.length).toBe(numberOfTasks + tasksToAdd);
 
   // remove a server
   act(() => {
     result.current.markAServerToBeRemoved();
   });
 
-  // server is not removed immediatly
+  // server is not removed immediately but is marked to be removed
   expect(result.current.data.servers.length).toBe(numberOfServers + 1);
+  const serversToBeRemoved = result.current.data.servers.filter(
+    ({ toBeRemoved }) => !toBeRemoved
+  );
+  expect(serversToBeRemoved.length).toBe(1);
 
   // wait for tasks to finish running
   act(() => {
-    jest.runAllTimers();
+    jest.advanceTimersByTime(20000);
   });
+
+  // check if server was removed
   expect(result.current.data.servers.length).toBe(numberOfServers);
+});
+
+test("remove tasks works properly", async () => {
+  const { result } = renderHook(() => useTaskManager());
+  const initialTasksNum = result.current.data.taskQueue.length;
+  // add a task
+  act(() => {
+    result.current.addTask();
+  });
+  expect(result.current.data.taskQueue.length).toBe(initialTasksNum + 1);
+  // make sure the added task is running
+  expect(result.current.data.taskQueue[initialTasksNum].running).toBe(true);
+  // delete task
+  act(() => {
+    result.current.removeTask();
+  });
+  // task is not deleted immediately as it is running
+  expect(result.current.data.taskQueue.length).toBe(initialTasksNum + 1);
+  // process the tasks
+  act(() => {
+    jest.advanceTimersByTime(20000);
+  });
+  expect(result.current.data.taskQueue.length).toBe(initialTasksNum);
 });
