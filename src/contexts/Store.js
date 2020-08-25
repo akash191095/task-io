@@ -1,5 +1,5 @@
 import React from "react";
-import useTaskQueue from "../hooks/useTaskManager";
+import useTaskManager from "../hooks/useTaskManager";
 
 const initialState = {};
 
@@ -11,11 +11,23 @@ function StoreProvider({ children }) {
     addTask,
     markAServerToBeRemoved,
     removeTask,
+    fetchATaskToProcess,
+    executeTask,
+    removeServer,
     data,
-  } = useTaskQueue();
+  } = useTaskManager();
   return (
     <StoreContext.Provider
-      value={{ addAServer, addTask, markAServerToBeRemoved, removeTask, data }}
+      value={{
+        addAServer,
+        addTask,
+        markAServerToBeRemoved,
+        removeTask,
+        fetchATaskToProcess,
+        executeTask,
+        removeServer,
+        data,
+      }}
     >
       {children}
     </StoreContext.Provider>

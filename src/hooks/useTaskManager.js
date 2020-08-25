@@ -1,108 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import shortId from "short-uuid";
 
-function useTaskQueue() {
+function addItem(items, newItem) {
+  return [...items, newItem];
+}
+
+function modifyItem(items, idToModify, dataToChange) {
+  return items.map((item) => {
+    if (item.id === idToModify) {
+      return { ...item, ...dataToChange };
+    }
+    return item;
+  });
+}
+
+function useTaskManager() {
   const [servers, setServers] = useState([]);
   const [taskQueue, setTaskQueue] = useState([]);
 
-  // initialize app
-  useEffect(() => {
-    if (servers.length === 0) {
-      const newServer = {
-        id: shortId.generate(),
-        idle: true,
-        toBeRemoved: false,
-      };
-      setServers((prevState) => [...prevState, newServer]);
-    }
-  }, [servers]);
-
-  useEffect(() => {
-    // everytime we modify servers/tasks state we will run this block
-    // remove any servers which were marked to be deleted
-    const serverToBeRemoved = servers.find(({ toBeRemoved }) => toBeRemoved);
-    if (serverToBeRemoved && serverToBeRemoved.idle) {
-      removeServer(serverToBeRemoved.id);
-      return;
-    }
-
-    // execute task if server is idle and we have a task pending
-    const idleServer = servers.find(({ idle }) => idle === true);
-    const taskToProcess = taskQueue.find((task) => !task.serverId);
-
-    if (idleServer && taskToProcess) {
-      taskToProcess.executeTask(taskToProcess.id, idleServer.id);
-    }
-  }, [servers, taskQueue]);
-
-  function changeServerIdleStatus(serverId, state) {
-    setServers((prevState) =>
-      prevState.map((server) => {
-        if (server.id === serverId) {
-          return { ...server, idle: state };
-        }
-        return server;
-      })
-    );
-  }
-
-  function markTaskAsRunning(taskId, serverId) {
-    setTaskQueue((prevState) =>
-      prevState.map((task) => {
-        if (task.id === taskId) {
-          return { ...task, running: true, serverId };
-        }
-        return task;
-      })
-    );
-  }
-
-  function addAServer() {
-    // check if max servers reached
-    if (servers.length >= 10) return; // can also setup error messages
+  const addAServer = useCallback(() => {
     // add server
     const newServer = {
       id: shortId.generate(),
       idle: true,
       toBeRemoved: false,
+      taskRunning: null,
     };
-    setServers((prevState) => [...prevState, newServer]);
-    return newServer;
-  }
+    setServers((prevState) => addItem(prevState, newServer));
+  }, []);
 
   function markAServerToBeRemoved() {
-    // only proceed if we have minimum 1 servers available after remove server
+    // only proceed if we have minimum 1 server available after removing server
     const availableServers = servers.filter(({ toBeRemoved }) => !toBeRemoved);
     if (availableServers.length >= 2) {
-      // selete the first server to be removed as anyone is fine
+      // select the first server to be removed as anyone is fine
       const { id: serverId } = availableServers[0];
+      // make the server to be removed
       setServers((prevState) =>
-        prevState.map((server) => {
-          if (server.id === serverId) {
-            return { ...server, toBeRemoved: true };
-          }
-          return server;
-        })
+        modifyItem(prevState, serverId, { toBeRemoved: true })
       );
     }
   }
 
   function removeServer(serverId) {
     setServers((prevState) => prevState.filter(({ id }) => id !== serverId));
-  }
-
-  function executeTask(taskId, serverId) {
-    // reserver server
-    changeServerIdleStatus(serverId, false);
-    // mark task as running
-    markTaskAsRunning(taskId, serverId);
-    setTimeout(() => {
-      // handle post task completion
-      // remove task from queue
-      setTaskQueue((prevState) => prevState.filter(({ id }) => id !== taskId));
-      // release server for other tasks
-      changeServerIdleStatus(serverId, true);
-    }, 20000);
   }
 
   function addTask(numberOfTasks = 1) {
@@ -113,7 +54,6 @@ function useTaskQueue() {
         id: shortId.generate(),
         running: false,
         serverId: null,
-        executeTask,
       };
       tasksToBeAdded.push(newTask);
     }
@@ -121,16 +61,43 @@ function useTaskQueue() {
     setTaskQueue([...taskQueue, ...tasksToBeAdded]);
   }
 
-  function removeTask(taskId) {
-    // find the task to remove and make sure its not running
-    const taskToRemove = taskQueue.find(
-      ({ id, running }) => id === taskId && !running
+  async function executeTask(task, server) {
+    // reserve server
+    setServers((prevState) =>
+      modifyItem(prevState, server.id, { idle: false, taskRunning: task })
     );
-    if (taskToRemove) {
+    // mark task as running
+    setTaskQueue((prevState) =>
+      modifyItem(prevState, task.id, { running: true })
+    );
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20000);
+    });
+    // handle post task completion
+    // remove task from queue
+    setTaskQueue((prevState) => prevState.filter(({ id }) => id !== task.id));
+    // release server for other tasks
+    setServers((prevState) =>
+      modifyItem(prevState, server.id, { idle: true, taskRunning: null })
+    );
+  }
+
+  function removeTask(taskId) {
+    // find the task to remove
+    const taskToRemove = taskQueue.find(({ id }) => id === taskId);
+    if (taskToRemove.running) {
+      // send error if its running
+      return { error: "cannot remove task while its running" };
+    } else if (!taskToRemove.running) {
+      // remove from queue
       setTaskQueue((prevState) =>
         prevState.filter(({ id }) => id !== taskToRemove.id)
       );
     }
+  }
+
+  function fetchATaskToProcess() {
+    return taskQueue.find((task) => !task.running && !task.serverId);
   }
 
   return {
@@ -138,8 +105,11 @@ function useTaskQueue() {
     addAServer,
     markAServerToBeRemoved,
     removeTask,
+    fetchATaskToProcess,
+    executeTask,
+    removeServer,
     data: { servers, taskQueue },
   };
 }
 
-export default useTaskQueue;
+export default useTaskManager;

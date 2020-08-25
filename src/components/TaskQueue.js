@@ -6,6 +6,7 @@ function TaskQueue() {
   const {
     data: { taskQueue },
   } = useContext(StoreContext);
+
   return (
     <div className="tasks-container">
       {taskQueue.map(({ id, running }) => (

@@ -1,20 +1,15 @@
 import React, { useContext } from "react";
 import { StoreContext } from "../contexts/Store";
+import ServerItem from "./ServerItem";
 
 function Servers() {
   const {
-    data: { servers, taskQueue },
+    data: { servers },
   } = useContext(StoreContext);
-  const serversToBeDeleted = servers.filter(
-    (server) => server.toBeRemoved === true
-  );
-  return (
-    <div>
-      <h2>Servers running: #{servers.length}</h2>
-      <h2>Servers scheduled to be deleted: #{serversToBeDeleted.length} </h2>
-      <h2>Tasks: #{taskQueue.length}</h2>
-    </div>
-  );
+
+  return servers.map((server) => (
+    <ServerItem key={server.id} server={server} />
+  ));
 }
 
 export default Servers;

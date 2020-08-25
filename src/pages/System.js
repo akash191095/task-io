@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Servers from "../components/Servers";
 import { StoreContext } from "../contexts/Store";
+import SystemInfo from "../components/SystemInfo";
 import TaskQueue from "../components/TaskQueue";
 
 function System() {
@@ -17,8 +18,12 @@ function System() {
     return true;
   });
   const minServerReached = avaiableServers.length === 1 ? true : false;
-
   const [taskInput, setTaskInput] = useState(1);
+
+  useEffect(() => {
+    // initialize the system with 1 server running
+    addAServer();
+  }, [addAServer]);
 
   return (
     <main>
@@ -46,6 +51,7 @@ function System() {
         value={taskInput}
         onChange={(e) => setTaskInput(e.target.value)}
       />
+      <SystemInfo />
       <Servers />
       <TaskQueue />
     </main>
