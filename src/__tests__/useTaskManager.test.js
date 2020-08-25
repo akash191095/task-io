@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import useTaskManager from "../hooks/useTaskManager";
-jest.useFakeTimers();
+
 test("starts up with 1 server and 0 tasks running", () => {
   const { result } = renderHook(() => useTaskManager());
 
@@ -77,6 +77,7 @@ test("Server is removed immediatly if idle", () => {
 });
 
 test("Server is not removed immediatly if idle", async () => {
+  jest.useFakeTimers();
   const { result } = renderHook(() => useTaskManager());
   const numberOfServers = result.current.data.servers.length;
 
@@ -116,24 +117,34 @@ test("Server is not removed immediatly if idle", async () => {
 });
 
 test("remove tasks works properly", async () => {
+  jest.useFakeTimers();
   const { result } = renderHook(() => useTaskManager());
   const initialTasksNum = result.current.data.taskQueue.length;
   // add a task
   act(() => {
     result.current.addTask();
   });
-  expect(result.current.data.taskQueue.length).toBe(initialTasksNum + 1);
   // make sure the added task is running
   expect(result.current.data.taskQueue[initialTasksNum].running).toBe(true);
   // delete task
   act(() => {
-    result.current.removeTask();
+    result.current.removeTask(result.current.data.taskQueue[0].id);
   });
-  // task is not deleted immediately as it is running
+  // task is not deleted as it is running
   expect(result.current.data.taskQueue.length).toBe(initialTasksNum + 1);
-  // process the tasks
+
+  // add a new task
   act(() => {
-    jest.advanceTimersByTime(20000);
+    result.current.addTask();
   });
-  expect(result.current.data.taskQueue.length).toBe(initialTasksNum);
+  // make sure the added task is not running
+  expect(result.current.data.taskQueue[initialTasksNum + 1].running).toBe(
+    false
+  );
+  // delete the task
+  act(() => {
+    result.current.removeTask(result.current.data.taskQueue[1].id);
+  });
+  // the secont task is deleted immediately as it was not running
+  expect(result.current.data.taskQueue.length).toBe(initialTasksNum + 1);
 });
