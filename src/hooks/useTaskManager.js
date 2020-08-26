@@ -19,7 +19,6 @@ function useTaskManager() {
   const [taskQueue, setTaskQueue] = useState([]);
 
   const addAServer = useCallback(() => {
-    // add server
     const newServer = {
       id: shortId.generate(),
       idle: true,
@@ -35,7 +34,7 @@ function useTaskManager() {
     if (availableServers.length >= 2) {
       // select the first server to be removed as anyone is fine
       const { id: serverId } = availableServers[0];
-      // make the server to be removed
+      // mark the server to be removed
       setServers((prevState) =>
         modifyItem(prevState, serverId, { toBeRemoved: true })
       );
@@ -48,7 +47,7 @@ function useTaskManager() {
 
   function addTask(numberOfTasks = 1) {
     const tasksToBeAdded = [];
-
+    // using loop to add multiple tasks at once
     for (let i = 0; i < numberOfTasks; i++) {
       const newTask = {
         id: shortId.generate(),
@@ -57,8 +56,8 @@ function useTaskManager() {
       };
       tasksToBeAdded.push(newTask);
     }
-    // add to task queue
-    setTaskQueue([...taskQueue, ...tasksToBeAdded]);
+    // add all tasks to task queue
+    setTaskQueue((prevState) => [...prevState, ...tasksToBeAdded]);
   }
 
   async function executeTask(task, server) {
@@ -89,7 +88,7 @@ function useTaskManager() {
       // send error if its running
       return { error: "cannot remove task while its running" };
     } else if (!taskToRemove.running) {
-      // remove from queue
+      // if task is not running remove it from queue
       setTaskQueue((prevState) =>
         prevState.filter(({ id }) => id !== taskToRemove.id)
       );
@@ -97,6 +96,7 @@ function useTaskManager() {
   }
 
   function fetchATaskToProcess() {
+    // return a task which is not running and has no server processing it
     return taskQueue.find((task) => !task.running && !task.serverId);
   }
 
