@@ -7,10 +7,12 @@ function ServerItem({ server }) {
   );
 
   useEffect(() => {
+    // remove server if was marked to be removed
     if (server.idle && server.toBeRemoved) {
       removeServer(server.id);
       return;
     }
+    // if server is idle
     if (server.idle && !server.toBeRemoved) {
       // fetch a task and process it
       const taskToProcess = fetchATaskToProcess();
