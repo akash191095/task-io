@@ -96,3 +96,67 @@ test("Add Server", () => {
 
   expect(screen.getByText(serversRunning)).toBeInTheDocument();
 });
+
+test("Remove Server when server is idle", () => {
+  const addServerButton = /add server/i;
+  const removeServerButton = /remove server/i;
+  const initialServersRunning = 1;
+  const serversRunning = new RegExp(`servers running: #`, "i");
+
+  render(
+    <StoreProvider>
+      <System />
+    </StoreProvider>
+  );
+
+  // add a server
+  fireEvent.click(screen.getByText(addServerButton));
+  expect(screen.getByText(serversRunning)).toHaveTextContent(
+    initialServersRunning + 1
+  );
+  // remove a server
+  fireEvent.click(screen.getByText(removeServerButton));
+  expect(screen.getByText(serversRunning)).toHaveTextContent(
+    initialServersRunning
+  );
+});
+
+test("Remove Server when server is active", async () => {
+  const addTaskText = /add tasks/i;
+  const numberOfTasksToAdd = 5;
+  const addServerButton = /add server/i;
+  const removeServerButton = /remove server/i;
+  const initialServersRunning = 1;
+  const serversRunning = new RegExp(`servers running: #`, "i");
+  const serversMarkedToBeRemoved = new RegExp(
+    `Servers scheduled to be deleted: #`,
+    "i"
+  );
+
+  render(
+    <StoreProvider>
+      <System />
+    </StoreProvider>
+  );
+
+  // add a server
+  fireEvent.click(screen.getByText(addServerButton));
+  // server is not removed immediatety
+  expect(screen.getByText(serversRunning)).toHaveTextContent(
+    initialServersRunning + 1
+  );
+
+  // add a few tasks
+  for (let i = 0; i < numberOfTasksToAdd; i++) {
+    fireEvent.click(screen.getByText(addTaskText));
+  }
+
+  // remove a server
+  fireEvent.click(screen.getByText(removeServerButton));
+  // server is not removed immediately
+  expect(screen.getByText(serversRunning)).toHaveTextContent(
+    initialServersRunning + 1
+  );
+  // server has been maked to be removed
+  expect(screen.getByText(serversMarkedToBeRemoved)).toHaveTextContent(1);
+});
